@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Portfolio</title>
+    <style>
+        :root {
+            --text-color: #fff;
+            --highlight: #00ffe0;
+            --card-bg: rgba(0, 0, 0, .5);
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            scroll-behavior: smooth;
+            background: transparent;
+        }
+
+        /* Galaxy base layer */
+        #galaxy {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(1200px 800px at 15% 25%, rgba(173, 85, 255, .22), transparent 55%),
+                radial-gradient(900px 700px at 80% 70%, rgba(0, 200, 255, .18), transparent 52%),
+                radial-gradient(700px 600px at 65% 20%, rgba(255, 120, 120, .14), transparent 50%),
+                radial-gradient(600px 500px at 30% 80%, rgba(120, 255, 200, .12), transparent 48%),
+                linear-gradient(180deg, #050611 0%, #0b0c2a 70%, #040617 100%);
+            background-size: 200% 200%, 220% 220%, 240% 240%, 260% 260%, cover;
+            animation: drift 120s ease-in-out infinite alternate;
+        }
+
+        @keyframes drift {
+            0% {
+                background-position: 0% 0%, 100% 0%, 0% 100%, 100% 100%, 0 0
+            }
+
+            100% {
+                background-position: 100% 100%, 0% 100%, 100% 0%, 0% 0%, 0 0
+            }
+        }
+
+        /* Star canvas layer */
+        #stars {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            display: none;
+        }
+
+        /* Content above backgrounds */
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 32px;
+            background: rgba(0, 0, 0, .6);
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(6px);
+            z-index: 3;
+        }
+
+        .navbar .brand {
+            font-weight: 700;
+            letter-spacing: .5px;
+        }
+
+        .nav-links a {
+            margin-left: 20px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Left social bar */
+        .social-sidebar {
+            position: fixed;
+            top: 50%;
+            left: 16px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            z-index: 9999;
+            pointer-events: auto;
+        }
+
+        .social-sidebar a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            color: #fff;
+            text-decoration: none;
+            opacity: .95;
+            padding: 6px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform .18s, background .18s, opacity .18s;
+            pointer-events: auto;
+        }
+
+        .social-sidebar a:hover,
+        .social-sidebar a:focus {
+            transform: translateX(2px) scale(1.08);
+            background: rgba(255, 255, 255, .08);
+            opacity: 1;
+            outline: none;
+        }
+
+        .social-sidebar a:focus-visible {
+            box-shadow: 0 0 0 3px rgba(0, 255, 224, .6);
+        }
+
+        .icon {
+            width: 22px;
+            height: 22px;
+            fill: #fff;
+            opacity: .9;
+        }
+
+        /* Profile header */
+        .profile-header {
+            max-width: 900px;
+            margin: 48px auto 24px;
+            text-align: center;
+        }
+
+        .profile-card {
+            display: inline-block;
+            background: var(--card-bg);
+            padding: 24px 28px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 999px;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, .2);
+        }
+
+        .headline {
+            margin: 12px 0 6px;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .subheadline {
+            margin: 0 0 12px;
+            opacity: .8;
+        }
+
+        .contact-row {
+            display: none;
+        }
+
+        .contact-row a {
+            text-decoration: none;
+        }
+
+        .actions {
+            margin-top: 16px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: var(--highlight);
+            color: #000;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        /* Sections */
+        .section {
+            max-width: 1000px;
+            margin: 28px auto;
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+        }
+
+        .section h2 {
+            margin: 0 0 12px;
+            color: var(--highlight);
+            border-bottom: 1px solid var(--highlight);
+            padding-bottom: 6px;
+        }
+
+        .placeholder {
+            opacity: .7;
+            font-style: italic;
+        }
+
+        /* Portfolio grid */
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, .06);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .project-thumb {
+            width: 100%;
+            height: 160px;
+            background: rgba(255, 255, 255, .08);
+            border-radius: 10px;
+        }
+
+        .project-title {
+            margin: 12px 0 6px;
+            font-weight: 700;
+        }
+
+        .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: var(--highlight);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .footer {
+            text-align: center;
+            margin: 60px 0 24px;
+            opacity: .6;
+            font-size: 14px;
+        }
+
+        @media (max-width:720px) {
+            .nav-links {
+                display: none;
+            }
+
+            .profile-card {
+                padding: 20px;
+            }
+
+            .avatar {
+                width: 96px;
+                height: 96px;
+            }
+        }
+
+        /* Education timeline */
+        .edu {
+            position: relative;
+            margin-top: 8px;
+            padding-left: 32px;
+        }
+
+        .edu::before {
+            content: "";
+            position: absolute;
+            left: 16px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, .25), rgba(255, 255, 255, .05));
+        }
+
+        .edu-item {
+            position: relative;
+            margin: 14px 0;
+        }
+
+        /* .edu-dot {
+            position: absolute;
+            left: 8px;
+            top: 16px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--highlight);
+            box-shadow: 0 0 18px rgba(0, 255, 224, .5);
+        } */
+
+        .edu-content {
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+
+        .edu-degree {
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+
+        .edu-institute {
+            opacity: .9;
+            margin-top: 4px;
+        }
+
+        .edu-meta {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--highlight);
+            color: #001015;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+
+        /* About styling */
+        .about-wrap {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .about-text p {
+            line-height: 1.8;
+            font-size: 1.05rem;
+            opacity: .95;
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .08);
+            padding: 16px 18px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .about-text p::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            border-radius: 12px 0 0 12px;
+            background: linear-gradient(to bottom, var(--highlight), rgba(0, 255, 224, .15));
+        }
+
+        .about-meta {
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .about-meta h3 {
+            margin: 0 0 10px;
+            font-size: 1rem;
+            color: var(--highlight);
+            letter-spacing: .4px;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip {
+            background: var(--highlight);
+            color: #001015;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 900px) {
+            .about-wrap {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Experience timeline/cards */
+        .exp {
+            position: relative;
+            margin-top: 8px;
+            padding-left: 32px;
+        }
+
+        .exp::before {
+            content: "";
+            position: absolute;
+            left: 16px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, .25), rgba(255, 255, 255, .05));
+        }
+
+        .exp-item {
+            position: relative;
+            margin: 14px 0;
+        }
+
+        .exp-card {
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .exp-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .exp-role {
+            font-weight: 700;
+        }
+
+        .exp-company {
+            opacity: .9;
+        }
+
+        .exp-dates {
+            background: var(--highlight);
+            color: #001015;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+
+        .exp-list {
+            margin: 12px 0 0;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .exp-list li {
+            position: relative;
+            padding-left: 20px;
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .exp-list li::before {
+            content: '▹';
+            position: absolute;
+            left: 0;
+            color: var(--highlight);
+            font-weight: 900;
+        }
+
+        /* Skills */
+        .skill-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .skill-card {
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .skill-card h3 {
+            margin: 0 0 10px;
+            font-size: 1rem;
+            color: var(--highlight);
+            letter-spacing: .3px;
+        }
+
+        .skills-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .skill {
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-weight: 700;
+            font-size: .92rem;
+            transition: transform .15s, background .15s, color .15s;
+        }
+
+        .skill:hover,
+        .skill:focus {
+            background: var(--highlight);
+            color: #001015;
+            transform: translateY(-1px);
+        }
+
+        /* Publications & Certifications */
+        .pc-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 900px) {
+            .pc-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .pub-item+.pub-item,
+        .cert-item+.cert-item {
+            margin-top: 12px;
+        }
+
+        .pub-title {
+            font-weight: 700;
+        }
+
+        .pub-authors {
+            opacity: .9;
+            margin-top: 6px;
+        }
+
+        .pub-venue {
+            margin-top: 8px;
+            font-size: .95rem;
+            opacity: .85;
+        }
+
+        .pub-meta {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .ext-link {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+            text-decoration: none;
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .1);
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+        }
+
+        .ext-link:hover {
+            background: var(--highlight);
+            color: #001015;
+        }
+
+        .badge.outline {
+            background: transparent;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, .2);
+        }
+
+        .project-thumb {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="galaxy"></div>
+    <canvas id="stars"></canvas>
+
+    <div class="social-sidebar">
+        <a href="https://github.com/sahilbasia-08" target="_blank" rel="noopener noreferrer" aria-label="GitHub"
+            title="GitHub">
+            <svg class="icon" viewBox="0 0 24 24">
+                <path
+                    d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.61-4.04-1.61-.55-1.41-1.34-1.78-1.34-1.78-1.09-.74.08-.73.08-.73 1.21.09 1.85 1.24 1.85 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.77-1.6-2.66-.3-5.46-1.34-5.46-5.95 0-1.31.47-2.39 1.24-3.23-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.92 1.24 3.23 0 4.62-2.8 5.64-5.47 5.94.43.37.82 1.1.82 2.22v3.29c0 .32.21.69.82.57A12 12 0 0 0 12 .5Z" />
+            </svg>
+        </a>
+        <a href="https://www.linkedin.com/in/dcsfsdg-ssadasfasas/" target="_blank" rel="noopener noreferrer"
+            aria-label="LinkedIn" title="LinkedIn">
+            <svg class="icon" viewBox="0 0 24 24">
+                <path
+                    d="M4.98 3.5A2.5 2.5 0 1 1 0 3.5a2.5 2.5 0 0 1 4.98 0ZM.5 8.5h4.99V24H.5V8.5Zm7.5 0h4.78v2.11h.07c.67-1.26 2.3-2.6 4.73-2.6 5.06 0 6 3.33 6 7.66V24h-5.2v-6.83c0-1.63-.03-3.73-2.27-3.73-2.28 0-2.63 1.78-2.63 3.61V24H8V8.5Z" />
+            </svg>
+        </a>
+        <a href="mailto:sahilbasia8@gmail.com" aria-label="Email" title="Email">
+            <svg class="icon" viewBox="0 0 24 24">
+                <path
+                    d="M2 4h20a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 3.2V18h20V7.2l-10 6.25L2 7.2Zm10 4.25L21.6 6H2.4L12 11.45Z" />
+            </svg>
+        </a>
+        <a href="tel:+1234567890" aria-label="Phone" title="Phone">
+            <svg class="icon" viewBox="0 0 24 24">
+                <path
+                    d="M6.6 10.8c1.7 3.3 3.9 5.5 7.2 7.2l2.4-2.4a1 1 0 0 1 1-.24c1.1.37 2.3.56 3.5.56a1 1 0 0 1 1 1v3.85a1 1 0 0 1-1 1C10.86 22.77 1.23 13.14.23 3.1A1 1 0 0 1 1.23 2h3.85a1 1 0 0 1 1 1c0 1.2.19 2.4.56 3.5a1 1 0 0 1-.24 1l-2.4 2.4Z" />
+            </svg>
+        </a>
+        <a href="resume.pdf" download aria-label="Download Resume" title="Download Resume">
+            <svg class="icon" viewBox="0 0 24 24">
+                <path
+                    d="M12 3a1 1 0 0 1 1 1v8.59l2.3-2.29a1 1 0 1 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 0 1 1.4-1.4L11 12.59V4a1 1 0 0 1 1-1Zm-7 14a1 1 0 1 0 0 2h14a1 1 0 1 0 0-2H5Z" />
+            </svg>
+        </a>
+    </div>
+
+    <div class="navbar">
+        <div class="brand"></div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#education">Education</a>
+            <a href="#experience">Experience</a>
+            <a href="#projects">Projects</a>
+            <a href="#publication">Publications & Certifications</a>
+            <a href="#courses">Relevant Courses</a>
+        </div>
+    </div>
+
+    <main class="content">
+        <header class="profile-header" id="home">
+            <div class="profile-card">
+                <img class="avatar" src="241110061_image.jpg" alt="Profile photo" />
+                <div class="headline">SAHIL BASIA</div>
+                <!-- <div class="subheadline">Your Title / Role</div> -->
+            </div>
+        </header>
+
+        <section class="section" id="about">
+            <h2>About Me</h2>
+            <div class="about-wrap">
+                <div class="about-text">
+                    <p>
+                        Hi, currently I am a Post Graduate student pursuing Masters in Technology in Computer
+                        Science and Engineering at IIT Kanpur, under the supervision of Professor Swarnendu Biswas.
+                        I have experience in object oriented programming, programming race free and concurrent programs,
+                        reverse engineering, and breaking the systems.
+                    </p>
+                </div>
+                <aside class="about-meta" aria-label="Interests">
+                    <h3>Interests</h3>
+                    <div class="chips">
+                        <span class="chip">GPU Programming</span>
+                        <span class="chip">GPU Architecture</span>
+                        <span class="chip">GPU Drivers</span>
+                        <span class="chip">Operating Systems</span>
+                        <span class="chip">Game Emulation</span>
+                        <span class="chip">Concurrent Programming</span>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+
+        <section class="section" id="education">
+            <h2>Education</h2>
+            <div class="edu">
+                <div class="edu-item">
+                    <div class="edu-dot"></div>
+                    <div class="edu-content">
+                        <div class="edu-degree">M.Tech in CSE</div>
+                        <div class="edu-institute">Indian Institute Of Kanpur</div>
+                        <div class="edu-institute">2024 - 2026</div>
+                        <div class="edu-meta"><span class="badge">CPI: 8.86</span></div>
+                    </div>
+                </div>
+                <div class="edu-item">
+                    <div class="edu-dot"></div>
+                    <div class="edu-content">
+                        <div class="edu-degree">B.Tech in CSE</div>
+                        <div class="edu-institute">Dr. Akhilesh Das Gupta Institute of Professional Studies</div>
+                        <div class="edu-institute">2019 - 2023</div>
+                        <div class="edu-meta"><span class="badge">CPI: 9.21</span></div>
+                    </div>
+                </div>
+                <div class="edu-item">
+                    <div class="edu-dot"></div>
+                    <div class="edu-content">
+                        <div class="edu-degree">CSBE Board 12th class</div>
+                        <div class="edu-institute">Maharaja Agrasen Modern School</div>
+                        <div class="edu-institute">2018 - 2019</div>
+                        <div class="edu-meta"><span class="badge">Percentage: 95%</span></div>
+                    </div>
+                </div>
+                <div class="edu-item">
+                    <div class="edu-dot"></div>
+                    <div class="edu-content">
+                        <div class="edu-degree">CSBE Board 10th class</div>
+                        <div class="edu-institute">2016-2017</div>
+                        <div class="edu-meta"><span class="badge">CPI: 10</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="section" id="experience">
+            <h2>Work Experience</h2>
+
+            <div class="exp">
+                <div class="exp-item">
+                    <div class="exp-card">
+                        <div class="exp-header">
+                            <div>
+                                <div class="exp-role">SDET Intern</div>
+                                <div class="exp-company">Paytm, Noida</div>
+                            </div>
+                            <span class="exp-dates">Jan 2024 – Jul 2024</span>
+                        </div>
+                        <ul class="exp-list">
+                            <li>Automated API testing pipelines by implementing Jacoco code coverage integration for
+                                Gradle-based services.</li>
+                            <li>Built a Jenkins CI/CD pipeline with custom shell scripts for automated build, testing,
+                                and coverage reporting.</li>
+                            <li>Deployed coverage reports to a web interface, enabling teams to monitor statistics and
+                                code coverage in real time.</li>
+                            <li>Conducted static code analysis on the prewritten codebase to identify and mitigate
+                                potential risks of unsafe shell executions.</li>
+                            <li>Collaborated with the QA and DevOps teams to streamline API automation workflows,
+                                improving pipeline efficiency.</li>
+                            <span class="skill">API Testing</span>
+                            <span class="skill">Jenkins</span>
+                            <span class="skill">Shell Scripting</span>
+                            <span class="skill">JaCoCo</span>
+                            <span class="skill">Gradle</span>
+                            <span class="skill">CI/CD</span>
+                            <span class="skill">Git</span>
+
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <section class="section" id="skills">
+            <h2>Skills</h2>
+            <div class="skill-grid">
+                <div class="skill-card">
+                    <h3>Languages</h3>
+                    <div class="skills-cloud">
+                        <span class="skill">C</span>
+                        <span class="skill">C++</span>
+                        <span class="skill">Python</span>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <h3>GPU / Parallel</h3>
+                    <div class="skills-cloud">
+                        <span class="skill">CUDA</span>
+                        <span class="skill">OpenMP</span>
+                        <span class="skill">Intel Vector Intrinsics</span>
+                        <span class="skill">GPGPU-Sim</span>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <h3>Debug & RE</h3>
+                    <div class="skills-cloud">
+                        <span class="skill">GDB</span>
+                        <span class="skill">IDA Toolkit</span>
+                        <span class="skill">Reverse Engineering</span>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <h3>Systems & Distributed</h3>
+                    <div class="skills-cloud">
+                        <span class="skill">GPU Drivers</span>
+                        <span class="skill">GPU Architecture</span>
+                        <span class="skill">Concurrent Programming</span>
+                        <span class="skill">Hyperledger Fabric</span>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <h3>DevOps / Infra</h3>
+                    <div class="skills-cloud">
+                        <span class="skill">Docker</span>
+                        <!-- <span class="skill">Virtualization</span> -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- <section class="section" id="portfolio">
+            <h2>Projects</h2>
+            <div class="project-grid">
+                <div class="project-card">
+                    <div class="project-thumb"
+                        style="background-image:url('https://opengraph.githubassets.com/ffeb1750b6d3c8709aefe91831f8da6f1c63ee37aa5ac575d32d131c916ece2a/gpgpu-sim/gpgpu-sim_distribution');">
+                    </div>
+
+                    <div class="project-title">Parallelizing GPGPU-Sim</div>
+                    <div class="placeholder">1. Vanilla version of GPGPU-Sim works serially and is kinda slow when it
+                        runs
+                        for benchmarks with large workload. So, I implemented Openmp directives to parallelize the
+                        GPGPU-Sim, achieving on an avg speedup of 4.5+.</div>
+                    <div class="placeholder">2. Extended the address space of the vanilla GPGPU-Sim. Now it can work on
+                        workloads with 2GB+ global memory allocation, therefore supporting benchmarks with heavy memory
+                        requirement.</div>
+                    <div class="tags"><span class="tag">OPENMP</span><span class="tag">GPGPU-Sim</span></div>
+                </div>
+                <div class="project-card">
+                    <div class="project-thumb"
+                        style="background-image:url('https://i.ytimg.com/vi/MT66xgRZar4/sddefault.jpg');">
+                    </div>
+                    <div class="project-title">Game Boy Emulator</div>
+                    <div class="placeholder">Programmed a game boy emulator, a software version of real Game Boy device.
+                        Currently it supports 4 shades of black and white colours. Supports most the famous gb titles
+                    </div>
+                    <div class="tags"><span class="tag">C</span><span class="tag">Emulation</span></div>
+                </div>
+                <div class="project-card">
+                    <div class="project-thumb" style="background-image:url('image.png');">
+                    </div>
+                    <div class="project-title">LazyReader</div>
+                    <div class="placeholder">LazyReader is a pdf reader, that allows use to remotely interact with the
+                        pdf reader. The reader is accompained with web interface, can be be interacted with using a
+                        handheld device, therefore helping users to not just stick to their mouse or laptop keyboard,
+                        and can lazily interact with pdf to use functionality like zoom, page change, pdf upload.</div>
+                    <div class="tags"><span class="tag">Python</span><span class="tag">PDF editor</span></div>
+                </div>
+                <div class="project-card">
+                    <div class="project-thumb"
+                        style="background-image:url('https://miro.medium.com/v2/resize:fit:1400/1*gnVTy2OOLzbfgYfv3PVnyw.png');">
+                    </div>
+                    <div class="project-title">Data Hiding using Image Steganography</div>
+                    <div class="placeholder">C++ based CLI tool that allows user to hide their secret data inside images
+                        using LBS algorithm. Enhanced standard algorithm by
+                        splitting encrypted text across a pool of images, making it even more difficult to decode the
+                        message.</div>
+                    <div class="tags"><span class="tag">C++</span><span class="tag">Security</span><span
+                            class="tag">Steganography</span></div>
+                </div>
+                <div class="project-card">
+                    <div class="project-thumb" style="background-image:url('image2.png');">
+                    </div>
+                    <div class="project-title">MyTravel </div>
+                    <div class="placeholder">A ticket booking system for Bus, Train and Airplane mode of travel accross
+                        India. The system is build on Hyperledger Fabric Technology, providing a immutable ledger,
+                        consistent booking to users.</div>
+                    <div class="tags"><span class="tag">Hyperledger Fabric</span><span class="tag">Web
+                            Application</span>
+                        <span class="tag">NodesJS</span><span class="tag">React</span>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-thumb"
+                        style="background-image:url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpdpDuS708pNO2dkPcZCjGUFuLA8Gf07Iauw&s');">
+                    </div>
+                    <div class="project-title">Data Race Detection Tools</div>
+                    <div class="placeholder">DJIT and FastTrack and some of the very popular algorithms, that help in
+                        detecting data races on memory dumps. Impelemnted these algorithm using c++ from scratch and
+                        tested them on intel pin. These are currently static data race detection implemention.</div>
+                    <div class="tags"><span class="tag">C++</span><span class="tag">Data Race</span></div>
+                </div>
+            </div>
+        </section> -->
+
+        <section class="section" id="projects">
+            <h2>Projects</h2>
+            <div class="project-grid">
+
+                <!-- Parallelizing GPGPU-Sim -->
+                <div class="project-card">
+                    <div class="project-thumb"
+                        style="background-image:url('https://opengraph.githubassets.com/ffeb1750b6d3c8709aefe91831f8da6f1c63ee37aa5ac575d32d131c916ece2a/gpgpu-sim/gpgpu-sim_distribution');">
+                    </div>
+                    <div class="project-title">Parallelizing GPGPU-Sim</div>
+                    <div class="placeholder">
+                        Upgraded the vanilla, single-threaded GPGPU-Sim with OpenMP directives, yielding an average
+                        <strong>4.5× speedup</strong> on large benchmarks. Extended the simulator’s address space to
+                        support workloads with <strong>2 GB+</strong> global memory.
+                    </div>
+                    <div class="tags"><span class="tag">OpenMP</span><span class="tag">GPGPU-Sim</span></div>
+                    <a class="ext-link" href="https://github.com/accel-sim/gpgpu-sim_distribution" target="_blank"
+                        rel="noopener noreferrer" aria-label="View publication">
+                        Github Link
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M14 3h7v7h-2V6.41l-9.3 9.3-1.4-1.42 9.3-9.3H14V3Z" />
+                            <path d="M5 5h6v2H7v10h10v-4h2v6H5V5Z" />
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Game Boy Emulator -->
+                <div class="project-card">
+                    <div class="project-thumb"
+                        style="background-image:url('https://spectrum.ieee.org/media-library/an-image-of-a-chip.jpg?id=55387210&width=2400&height=1799');">
+                    </div>
+                    <div class="project-title">RISC-V Cpu emulation</div>
+                    <div class="placeholder">
+                        Built a RISC-V emulator in C++, implementing (RV32I) instructions based on the official RISC-V
+                        isa specification. Developed basic CPU, BUS, and DRAM modules to simulate instruction fetch,
+                        decode, execute, and memory operation
+                    </div>
+                    <div class="tags"><span class="tag">C</span><span class="tag">Emulation</span></div>
+                    <a class="ext-link" href="https://github.com/sahilbasia-08/RISC-V-CPU-emulator" target="_blank"
+                        rel="noopener noreferrer" aria-label="View publication">
+                        Github Link
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M14 3h7v7h-2V6.41l-9.3 9.3-1.4-1.42 9.3-9.3H14V3Z" />
+                            <path d="M5 5h6v2H7v10h10v-4h2v6H5V5Z" />
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- LazyReader -->
+                <div class="project-card">
+                    <div class="project-thumb" style="background-image:url('image.png');"></div>
+                    <div class="project-title">LazyReader</div>
+                    <div class="placeholder">
+                        A remote-friendly PDF reader with a companion web UI. Control zoom, page navigation, and file
+                        upload from a handheld device—no keyboard or mouse required.
+                    </div>
+                    <div class="tags"><span class="tag">Python</span><span class="tag">PDF</span></div>
+                    <a class="ext-link" href="https://github.com/sahilbasia-08/LazyReader" target="_blank"
+                        rel="noopener noreferrer" aria-label="View publication">
+                        Github Link
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M14 3h7v7h-2V6.41l-9.3 9.3-1.4-1.42 9.3-9.3H14V3Z" />
+                            <path d="M5 5h6v2H7v10h10v-4h2v6H5V5Z" />
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Image Steganography -->
+                <div class="project-card">
+                    <div class="project-thumb"
+                        style="background-image:url('https://miro.medium.com/v2/resize:fit:1400/1*gnVTy2OOLzbfgYfv3PVnyw.png');">
+                    </div>
+                    <div class="project-title">Data Hiding using Image Steganography</div>
+                    <div class="placeholder">
+                        C++ CLI tool implementing the <strong>LSB</strong> method for securely embedding data in images.
+                        Enhanced secrecy by splitting encrypted payloads across a pool of images.
+                    </div>
+                    <div class="tags"><span class="tag">C++</span><span class="tag">Security</span><span
+                            class="tag">Steganography</span></div>
+                    <a class="ext-link" href="https://github.com/sahilbasia-08/Data-Hiding-Using-Image-Steganography"
+                        target="_blank" rel="noopener noreferrer" aria-label="View publication">
+                        Github Link
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M14 3h7v7h-2V6.41l-9.3 9.3-1.4-1.42 9.3-9.3H14V3Z" />
+                            <path d="M5 5h6v2H7v10h10v-4h2v6H5V5Z" />
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- MyTravel -->
+                <div class="project-card">
+                    <div class="project-thumb" style="background-image:url('image2.png');"></div>
+                    <div class="project-title">MyTravel</div>
+                    <div class="placeholder">
+                        A ticket-booking system for bus, rail, and air travel across India, built on
+                        <strong>Hyperledger Fabric</strong> to ensure an immutable ledger and consistent bookings.
+                    </div>
+                    <div class="tags">
+                        <span class="tag">Hyperledger Fabric</span><span class="tag">Web Application</span>
+                        <span class="tag">Node.js</span><span class="tag">React</span>
+                        <a class="ext-link" href="https://github.com/sahilbasia-08/MyTravel_ticketing_system"
+                            target="_blank" rel="noopener noreferrer" aria-label="View publication">
+                            Github Link
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M14 3h7v7h-2V6.41l-9.3 9.3-1.4-1.42 9.3-9.3H14V3Z" />
+                                <path d="M5 5h6v2H7v10h10v-4h2v6H5V5Z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Data Race Detection Tools -->
+                <div class="project-card">
+                    <div class="project-thumb"
+                        style="background-image:url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpdpDuS708pNO2dkPcZCjGUFuLA8Gf07Iauw&s');">
+                    </div>
+                    <div class="project-title">Data Race Detection Tools</div>
+                    <div class="placeholder">
+                        Implemented classic data-race detectors (<strong>DJIT</strong>, <strong>FastTrack</strong>) in
+                        C++ from scratch
+                        and evaluated them with <strong>Intel Pin</strong>. Current prototype analyzes recorded memory
+                        traces.
+                    </div>
+                    <div class="tags"><span class="tag">C++</span><span class="tag">Data Race</span></div>
+                    <a class="ext-link" href="https://github.com/sahilbasia-08/CS636_assignment_IITK" target="_blank"
+                        rel="noopener noreferrer" aria-label="View publication">
+                        Github Link
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M14 3h7v7h-2V6.41l-9.3 9.3-1.4-1.42 9.3-9.3H14V3Z" />
+                            <path d="M5 5h6v2H7v10h10v-4h2v6H5V5Z" />
+                        </svg>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+
+        <section class="section" id="publication">
+            <h2>Publications and Certifications</h2>
+
+            <div class="pc-grid">
+                <!-- Publications -->
+                <div class="card">
+                    <h3 style="margin:0 0 10px; color:var(--highlight);">Publications</h3>
+
+                    <div class="pub-item">
+                        <div class="pub-title">A Survey of Cloud Architectures: Confidentiality, Contemporary State, and
+                            Future Challenges</div>
+                        <div class="pub-authors">Sahil Basia, Kanishk Sharma, Aman Dutt Bhagat, Dr. Prashant Vats</div>
+                        <div class="pub-venue"><em>IEEE ICICT 2022</em>, IEEE, 2022</div>
+
+                        <div class="pub-meta">
+                            <span class="badge outline">Conference</span>
+                            <!-- Add your real link if available -->
+                            <a class="ext-link" href="https://doi.org/10.1109/ICICT55121.2022.10064580" target="_blank"
+                                rel="noopener noreferrer" aria-label="View publication">
+                                View paper
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M14 3h7v7h-2V6.41l-9.3 9.3-1.4-1.42 9.3-9.3H14V3Z" />
+                                    <path d="M5 5h6v2H7v10h10v-4h2v6H5V5Z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certifications -->
+                <div class="card">
+                    <h3 style="margin:0 0 10px; color:var(--highlight);">Certifications</h3>
+
+                    <div class="cert-item">
+                        <div class="pub-title">CEH Practical</div>
+                        <div class="pub-venue">EC-Council</div>
+                        <div class="pub-meta">
+                            <span class="badge">Security</span>
+                            <span class="skill">Credential ID ECC6192705834</span>
+                            <!-- Add a real verify link if you have one -->
+                            <!-- <a class="ext-link" href="#" target="_blank" rel="noopener noreferrer"
+                                aria-label="Verify certificate">
+                                Verify -->
+                            <!-- <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M14 3h7v7h-2V6.41l-9.3 9.3-1.4-1.42 9.3-9.3H14V3Z" />
+                                <path d="M5 5h6v2H7v10h10v-4h2v6H5V5Z" /> -->
+                            </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="courses">
+            <h2>Relevant Courses</h2>
+            <div class="exp">
+                <div class="exp-item">
+                    <div class="exp-card">
+                        <div class="exp-header">
+                            <!-- <div>
+                                <div class="exp-role">SDET Intern</div>
+                                <div class="exp-company">Paytm, Noida</div>
+                            </div> -->
+                            <!-- <span class="exp-dates">Jan 2024 – Jul 2024</span> -->
+                        </div>
+                        <ul class="exp-list">
+                            <li>Introduction to Machine Learning (CS 771)</li>
+                            <li>Built a Jenkins CI/CD pipeline with custom shell scripts for automated build, testing,
+                                and coverage reporting.</li>
+                            <li>Deployed coverage reports to a web interface, enabling teams to monitor statistics and
+                                code coverage in real time.</li>
+                            <li>Conducted static code analysis on the prewritten codebase to identify and mitigate
+                                potential risks of unsafe shell executions.</li>
+                            <li>Collaborated with the QA and DevOps teams to streamline API automation workflows,
+                                improving pipeline efficiency.</li>
+                            <span class="skill">API Testing</span>
+                            <span class="skill">Jenkins</span>
+                            <span class="skill">Shell Scripting</span>
+                            <span class="skill">JaCoCo</span>
+                            <span class="skill">Gradle</span>
+                            <span class="skill">CI/CD</span>
+                            <span class="skill">Git</span>
+
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <div class="footer">© <span id="year"></span> Sahil Basia</div>
+    </main>
+
+    <script>
+        // Lightweight, offline starfield (no external libs)
+        (function () {
+            const cv = document.getElementById('stars');
+            const ctx = cv.getContext('2d');
+            let dpr = Math.max(1, window.devicePixelRatio || 1);
+            let stars = [];
+            const STAR_COUNT = 220;
+
+            function resize() {
+                dpr = Math.max(1, window.devicePixelRatio || 1);
+                cv.width = innerWidth * dpr;
+                cv.height = innerHeight * dpr;
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                if (!stars.length) init();
+            }
+
+            function rand(a, b) { return Math.random() * (b - a) + a; }
+
+            function init() {
+                stars = new Array(STAR_COUNT).fill(0).map(() => ({
+                    x: rand(0, innerWidth),
+                    y: rand(0, innerHeight),
+                    r: rand(0.6, 1.8),
+                    a: rand(0.3, 0.9),
+                    fade: rand(-0.006, 0.006),
+                    sp: rand(0.05, 0.25)
+                }));
+            }
+
+            function step() {
+                ctx.clearRect(0, 0, innerWidth, innerHeight);
+                for (const s of stars) {
+                    s.y += s.sp; if (s.y > innerHeight) { s.y = -2; s.x = rand(0, innerWidth); }
+                    s.a += s.fade; if (s.a < 0.1 || s.a > 0.9) s.fade *= -1;
+                    ctx.globalAlpha = s.a;
+                    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+                requestAnimationFrame(step);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            requestAnimationFrame(step);
+            document.getElementById('year').textContent = new Date().getFullYear();
+        })();
+    </script>
+</body>
+
+</html>
